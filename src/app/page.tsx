@@ -14,6 +14,7 @@ import ContactSection from '@/components/ContactSection';
 import Scene3D from '@/components/Scene3D';
 import SmoothScroll from '@/components/SmoothScroll';
 import LoadingScreen from '@/components/LoadingScreen';
+import CursorParticles from '@/components/CursorParticles';
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -31,6 +32,7 @@ export default function Home() {
         <SmoothScroll>
           {/* 2. Persistent Background WebGL 3D Canvas */}
           <Scene3D />
+          <CursorParticles />
 
           {/* 3. HTML Content Overlay Layer */}
           <div className="relative z-10 w-full pointer-events-none">
