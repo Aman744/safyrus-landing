@@ -59,29 +59,52 @@ export default function ClientGlobe() {
     <group position={[0, -0.2, 0]}>
       {/* Globe Core & Dots */}
       <group ref={globeRef}>
-        {/* Main Wireframe Earth Sphere */}
+        
+        {/* Solid Earth Core */}
         <mesh>
-          <sphereGeometry args={[1.3, 16, 12]} />
+          <sphereGeometry args={[1.22, 24, 24]} />
+          <meshStandardMaterial
+            color="#080e1e"
+            roughness={0.6}
+            metalness={0.8}
+            flatShading
+          />
+        </mesh>
+
+        {/* Outer Grid Wireframe Sphere */}
+        <mesh scale={1.01}>
+          <sphereGeometry args={[1.22, 20, 16]} />
           <meshBasicMaterial
             color="#2563EB"
             wireframe
             transparent
-            opacity={0.22}
+            opacity={0.3}
             blending={AdditiveBlending}
           />
         </mesh>
 
-        {/* Global Client Location Nodes */}
+        {/* Global Client Location Nodes (Pulsing glowing spheres) */}
         {dots.map((d, idx) => (
-          <mesh key={idx} position={d.pos}>
-            <sphereGeometry args={[d.size, 6, 6]} />
-            <meshBasicMaterial
-              color="#00BFFF"
-              transparent
-              opacity={0.8}
-              blending={AdditiveBlending}
-            />
-          </mesh>
+          <group key={idx} position={d.pos}>
+            <mesh>
+              <sphereGeometry args={[d.size * 1.2, 8, 8]} />
+              <meshBasicMaterial
+                color="#00BFFF"
+                transparent
+                opacity={0.9}
+                blending={AdditiveBlending}
+              />
+            </mesh>
+            {/* Tiny satellite pointer beam */}
+            <mesh position={[0, 0, 0]} rotation={[0, 0, 0]}>
+              <cylinderGeometry args={[0.005, 0.015, 0.15, 4]} />
+              <meshBasicMaterial
+                color="#00BFFF"
+                transparent
+                opacity={0.4}
+              />
+            </mesh>
+          </group>
         ))}
       </group>
 
@@ -91,7 +114,7 @@ export default function ClientGlobe() {
         <meshBasicMaterial
           color="#00BFFF"
           transparent
-          opacity={0.2}
+          opacity={0.25}
           blending={AdditiveBlending}
         />
       </mesh>
@@ -101,7 +124,7 @@ export default function ClientGlobe() {
         <meshBasicMaterial
           color="#2563EB"
           transparent
-          opacity={0.15}
+          opacity={0.2}
           blending={AdditiveBlending}
         />
       </mesh>

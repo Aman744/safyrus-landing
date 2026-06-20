@@ -17,6 +17,7 @@ interface ProbeConfig {
 
 export default function OrbitingRockets() {
   const probesRef = useRef<Group>(null);
+  const contactSatelliteRef = useRef<Group>(null);
 
   // Configuration for two deep space probes/satellites
   const probesData = useMemo<ProbeConfig[]>(() => [
@@ -48,6 +49,7 @@ export default function OrbitingRockets() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
 
+    // 1. Animate background orbiting probes
     probesData.forEach((data, index) => {
       const ref = refs[index];
       if (!ref.current) return;
@@ -70,19 +72,28 @@ export default function OrbitingRockets() {
       const target = new Vector3(nextX, nextY, nextZ);
       ref.current.lookAt(target);
     });
+
+    // 2. Animate dedicated contact satellite hovering next to the form
+    if (contactSatelliteRef.current) {
+      contactSatelliteRef.current.position.y = -0.3 + Math.sin(time * 0.8) * 0.06;
+      contactSatelliteRef.current.position.x = -0.85 + Math.cos(time * 0.4) * 0.03;
+      contactSatelliteRef.current.position.z = 0.8;
+      
+      contactSatelliteRef.current.rotation.y = time * 0.12;
+      contactSatelliteRef.current.rotation.x = Math.sin(time * 0.5) * 0.08;
+    }
   });
 
   return (
     <group ref={probesRef}>
+      {/* Background Orbiting Probes */}
       {probesData.map((data, index) => {
         const ref = refs[index];
 
         return (
           <group key={index} ref={ref}>
-            {/* Probe Model Wrapper */}
             <group scale={data.scale}>
-              
-              {/* 1. Main Core (Dodecahedron) */}
+              {/* Main Core (Dodecahedron) */}
               <mesh>
                 <dodecahedronGeometry args={[0.5, 0]} />
                 <meshStandardMaterial
@@ -103,8 +114,7 @@ export default function OrbitingRockets() {
                 />
               </mesh>
 
-              {/* 2. Lateral Solar Array Panels */}
-              {/* Left Solar Panel */}
+              {/* Solar Panels */}
               <group position={[-1.0, 0, 0]}>
                 <mesh>
                   <boxGeometry args={[0.9, 0.3, 0.03]} />
@@ -124,14 +134,12 @@ export default function OrbitingRockets() {
                     blending={AdditiveBlending}
                   />
                 </mesh>
-                {/* Panel connector arm */}
                 <mesh position={[0.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
                   <cylinderGeometry args={[0.03, 0.03, 0.2]} />
                   <meshStandardMaterial color="#334155" />
                 </mesh>
               </group>
 
-              {/* Right Solar Panel */}
               <group position={[1.0, 0, 0]}>
                 <mesh>
                   <boxGeometry args={[0.9, 0.3, 0.03]} />
@@ -151,14 +159,13 @@ export default function OrbitingRockets() {
                     blending={AdditiveBlending}
                   />
                 </mesh>
-                {/* Panel connector arm */}
                 <mesh position={[-0.5, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
                   <cylinderGeometry args={[0.03, 0.03, 0.2]} />
                   <meshStandardMaterial color="#334155" />
                 </mesh>
               </group>
 
-              {/* 3. Parabolic Comm Dish (Front Side, facing lookAt vector) */}
+              {/* Comm Dish */}
               <group position={[0, 0, 0.65]} rotation={[Math.PI / 2, 0, 0]}>
                 <mesh>
                   <cylinderGeometry args={[0.3, 0.05, 0.15, 12, 1, true]} />
@@ -179,16 +186,14 @@ export default function OrbitingRockets() {
                     blending={AdditiveBlending}
                   />
                 </mesh>
-                {/* Feed Horn spire */}
                 <mesh position={[0, 0.15, 0]}>
                   <coneGeometry args={[0.03, 0.25, 4]} />
                   <meshBasicMaterial color={data.color} />
                 </mesh>
               </group>
 
-              {/* 4. Rear Engine Thrusters & Trails */}
+              {/* Engine Thrusters */}
               <group position={[0, 0, -0.65]} rotation={[-Math.PI / 2, 0, 0]}>
-                {/* Dual engine bells */}
                 <mesh position={[-0.15, 0, 0]}>
                   <cylinderGeometry args={[0.08, 0.05, 0.2, 8]} />
                   <meshStandardMaterial color="#475569" />
@@ -197,8 +202,6 @@ export default function OrbitingRockets() {
                   <cylinderGeometry args={[0.08, 0.05, 0.2, 8]} />
                   <meshStandardMaterial color="#475569" />
                 </mesh>
-
-                {/* Plasma jet glow plumes */}
                 <mesh position={[-0.15, -0.3, 0]} rotation={[Math.PI, 0, 0]}>
                   <coneGeometry args={[0.06, 0.5, 8]} />
                   <meshBasicMaterial
@@ -221,7 +224,7 @@ export default function OrbitingRockets() {
                 </mesh>
               </group>
 
-              {/* 5. Antenna Spire Mast */}
+              {/* Antenna Mast */}
               <mesh position={[0, 0.65, 0]}>
                 <cylinderGeometry args={[0.015, 0.015, 0.5, 4]} />
                 <meshStandardMaterial color="#475569" />
@@ -230,11 +233,106 @@ export default function OrbitingRockets() {
                 <sphereGeometry args={[0.04, 4, 4]} />
                 <meshBasicMaterial color={data.color} />
               </mesh>
-
             </group>
           </group>
         );
       })}
+
+      {/* Dedicated Hovering Contact Telemetry Satellite */}
+      <group ref={contactSatelliteRef}>
+        <group scale={0.35}>
+          {/* Main Core (Octahedron & Box combo) */}
+          <mesh>
+            <octahedronGeometry args={[0.5]} />
+            <meshStandardMaterial
+              color="#0f172a"
+              metalness={0.9}
+              roughness={0.1}
+              flatShading
+            />
+          </mesh>
+          <mesh scale={1.01}>
+            <octahedronGeometry args={[0.5]} />
+            <meshBasicMaterial
+              color="#00BFFF"
+              wireframe
+              transparent
+              opacity={0.35}
+              blending={AdditiveBlending}
+            />
+          </mesh>
+
+          {/* Core cylinder */}
+          <mesh position={[0, 0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.2, 0.2, 0.6, 8]} />
+            <meshStandardMaterial color="#334155" metalness={0.8} roughness={0.2} />
+          </mesh>
+
+          {/* Large Solar Panels (Left & Right) */}
+          <group position={[-1.2, 0, 0]}>
+            <mesh>
+              <boxGeometry args={[1.1, 0.35, 0.04]} />
+              <meshStandardMaterial color="#090d16" metalness={0.8} roughness={0.2} />
+            </mesh>
+            <mesh scale={1.02}>
+              <boxGeometry args={[1.1, 0.35, 0.04]} />
+              <meshBasicMaterial color="#00BFFF" wireframe transparent opacity={0.4} />
+            </mesh>
+            <mesh position={[0.6, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.03, 0.03, 0.2]} />
+              <meshStandardMaterial color="#475569" />
+            </mesh>
+          </group>
+
+          <group position={[1.2, 0, 0]}>
+            <mesh>
+              <boxGeometry args={[1.1, 0.35, 0.04]} />
+              <meshStandardMaterial color="#090d16" metalness={0.8} roughness={0.2} />
+            </mesh>
+            <mesh scale={1.02}>
+              <boxGeometry args={[1.1, 0.35, 0.04]} />
+              <meshBasicMaterial color="#00BFFF" wireframe transparent opacity={0.4} />
+            </mesh>
+            <mesh position={[-0.6, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.03, 0.03, 0.2]} />
+              <meshStandardMaterial color="#475569" />
+            </mesh>
+          </group>
+
+          {/* Parabolic High-Gain Comm Dish */}
+          <group position={[0, 0, 0.6]} rotation={[Math.PI / 2, 0, 0]}>
+            <mesh>
+              <cylinderGeometry args={[0.4, 0.05, 0.2, 12, 1, true]} />
+              <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} side={DoubleSide} />
+            </mesh>
+            <mesh scale={1.02}>
+              <cylinderGeometry args={[0.4, 0.05, 0.2, 12, 1, true]} />
+              <meshBasicMaterial color="#00BFFF" wireframe transparent opacity={0.5} blending={AdditiveBlending} />
+            </mesh>
+            <mesh position={[0, 0.2, 0]}>
+              <coneGeometry args={[0.04, 0.2, 4]} />
+              <meshBasicMaterial color="#00BFFF" />
+            </mesh>
+          </group>
+
+          {/* Plasma Engine Thrusters */}
+          <group position={[0, 0, -0.6]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh position={[-0.1, 0, 0]}>
+              <cylinderGeometry args={[0.08, 0.05, 0.2, 8]} />
+              <meshStandardMaterial color="#475569" />
+            </mesh>
+            <mesh position={[0.1, 0, 0]}>
+              <cylinderGeometry args={[0.08, 0.05, 0.2, 8]} />
+              <meshStandardMaterial color="#475569" />
+            </mesh>
+            {/* Engine plume */}
+            <mesh position={[0, -0.35, 0]} rotation={[Math.PI, 0, 0]}>
+              <coneGeometry args={[0.08, 0.4, 8]} />
+              <meshBasicMaterial color="#00BFFF" transparent opacity={0.6} blending={AdditiveBlending} side={DoubleSide} />
+            </mesh>
+          </group>
+        </group>
+      </group>
     </group>
   );
 }
