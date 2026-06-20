@@ -5,7 +5,7 @@ import { Stars } from '@react-three/drei';
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Vector3, AmbientLight, DirectionalLight } from 'three';
+import { Vector3, AmbientLight, DirectionalLight, Group } from 'three';
 
 import Himalayas from './Himalayas';
 import MeditatingBoy from './MeditatingBoy';
@@ -85,6 +85,14 @@ export default function Scene3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const ambientRef = useRef<AmbientLight>(null);
   const dirRef = useRef<DirectionalLight>(null);
+
+  // Group references to animate their scales on scroll (prevent overlapping)
+  const meditatingBoyRef = useRef<Group>(null);
+  const cognitiveHeadRef = useRef<Group>(null);
+  const clientGlobeRef = useRef<Group>(null);
+  const orbitingRocketsRef = useRef<Group>(null);
+  const hinduTempleRef = useRef<Group>(null);
+  const dataStreamsRef = useRef<Group>(null);
   
   // Camera coordinates animated by GSAP ScrollTrigger
   const cameraState = useRef<CameraStateData>({
@@ -124,7 +132,9 @@ export default function Scene3D() {
       },
     });
 
-    // Animate camera and lights dynamically across the 8 sections
+    // Hero: Only Himalayas visible. All other models are scale 0 initially.
+
+    // Section 1: About (Techno Meditating Boy)
     tl.to(cameraState.current, {
       posX: -1.2,
       posY: 0.1,
@@ -132,7 +142,7 @@ export default function Scene3D() {
       targetX: 0,
       targetY: 0,
       targetZ: 0,
-      duration: 1, // Section 1: About (Techno Meditating Boy)
+      duration: 1,
     })
     .to(lightState.current, {
       ambientIntensity: 1.4, // bright daylight sun rise
@@ -142,6 +152,10 @@ export default function Scene3D() {
     }, '<')
     .to(containerRef.current, {
       backgroundImage: 'linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%)',
+      duration: 1,
+    }, '<')
+    .to(meditatingBoyRef.current ? meditatingBoyRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
       duration: 1,
     }, '<')
 
@@ -165,6 +179,14 @@ export default function Scene3D() {
       backgroundImage: "url('/safyrus-landing/nebula_bg.png')",
       duration: 1,
     }, '<')
+    .to(meditatingBoyRef.current ? meditatingBoyRef.current.scale : {}, {
+      x: 0, y: 0, z: 0,
+      duration: 1,
+    }, '<')
+    .to(cognitiveHeadRef.current ? cognitiveHeadRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
+      duration: 1,
+    }, '<')
 
     // Section 3: Capabilities (Clients - Globe semi-sphere)
     .to(cameraState.current, {
@@ -176,6 +198,14 @@ export default function Scene3D() {
       targetZ: 0,
       duration: 1,
     })
+    .to(cognitiveHeadRef.current ? cognitiveHeadRef.current.scale : {}, {
+      x: 0, y: 0, z: 0,
+      duration: 1,
+    }, '<')
+    .to(clientGlobeRef.current ? clientGlobeRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
+      duration: 1,
+    }, '<')
 
     // Section 4: AI Lab
     .to(cameraState.current, {
@@ -187,6 +217,14 @@ export default function Scene3D() {
       targetZ: 0,
       duration: 1,
     })
+    .to(clientGlobeRef.current ? clientGlobeRef.current.scale : {}, {
+      x: 0, y: 0, z: 0,
+      duration: 1,
+    }, '<')
+    .to(dataStreamsRef.current ? dataStreamsRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
+      duration: 1,
+    }, '<')
 
     // Section 5: Showcase
     .to(cameraState.current, {
@@ -198,6 +236,10 @@ export default function Scene3D() {
       targetZ: 0,
       duration: 1,
     })
+    .to(dataStreamsRef.current ? dataStreamsRef.current.scale : {}, {
+      x: 0, y: 0, z: 0,
+      duration: 1,
+    }, '<')
 
     // Section 6: Temple of Innovation
     .to(cameraState.current, {
@@ -209,6 +251,10 @@ export default function Scene3D() {
       targetZ: -1.0,
       duration: 1,
     })
+    .to(hinduTempleRef.current ? hinduTempleRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
+      duration: 1,
+    }, '<')
 
     // Section 7: Contact (Satellite)
     .to(cameraState.current, {
@@ -219,7 +265,15 @@ export default function Scene3D() {
       targetY: -0.2,
       targetZ: 0,
       duration: 1,
-    });
+    })
+    .to(hinduTempleRef.current ? hinduTempleRef.current.scale : {}, {
+      x: 0, y: 0, z: 0,
+      duration: 1,
+    }, '<')
+    .to(orbitingRocketsRef.current ? orbitingRocketsRef.current.scale : {}, {
+      x: 1, y: 1, z: 1,
+      duration: 1,
+    }, '<');
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -259,22 +313,34 @@ export default function Scene3D() {
           <Himalayas />
 
           {/* About: Meditating Techno Boy */}
-          <MeditatingBoy position={[0, -0.3, 0]} scale={1.0} />
+          <group ref={meditatingBoyRef} scale={[0, 0, 0]}>
+            <MeditatingBoy position={[0, -0.3, 0]} scale={1.0} />
+          </group>
 
           {/* Services: Cognitive Mind Head */}
-          <CognitiveHead />
+          <group ref={cognitiveHeadRef} scale={[0, 0, 0]}>
+            <CognitiveHead />
+          </group>
 
           {/* Capabilities/Clients: Earth Globe */}
-          <ClientGlobe />
+          <group ref={clientGlobeRef} scale={[0, 0, 0]}>
+            <ClientGlobe />
+          </group>
 
           {/* Contact: Hovering Telemetry Satellite */}
-          <OrbitingRockets />
+          <group ref={orbitingRocketsRef} scale={[0, 0, 0]}>
+            <OrbitingRockets />
+          </group>
 
           {/* Temple of Innovation */}
-          <HinduTemple position={[0, -0.4, -1.5]} scale={1.2} />
+          <group ref={hinduTempleRef} scale={[0, 0, 0]}>
+            <HinduTemple position={[0, -0.4, -1.5]} scale={1.2} />
+          </group>
 
           {/* AI Lab: Data Streams */}
-          <DataStreams count={65} connectionDist={1.5} />
+          <group ref={dataStreamsRef} scale={[0, 0, 0]}>
+            <DataStreams count={65} connectionDist={1.5} />
+          </group>
         </group>
 
         {/* Dynamic scene controller updates */}
