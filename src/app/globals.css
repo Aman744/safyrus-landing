@@ -1,26 +1,160 @@
 @import "tailwindcss";
 
+@theme {
+  --color-sapphire: #00BFFF;
+  --color-sapphire-deep: #2563EB;
+  --color-sapphire-glow: rgba(0, 191, 255, 0.45);
+  --color-space-bg: #050505;
+  --color-space-card: rgba(10, 10, 10, 0.7);
+  --font-display: var(--font-cinzel), serif;
+  --font-sans: var(--font-outfit), sans-serif;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #050505;
+  --foreground: #f8fafc;
+  --sapphire: #00BFFF;
+  --sapphire-deep: #2563EB;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #050505;
+  color: #f8fafc;
+  overflow-x: hidden;
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00BFFF;
+}
+
+/* Glowing effects */
+.glow-text-sapphire {
+  text-shadow: 0 0 10px rgba(0, 191, 255, 0.5), 0 0 20px rgba(0, 191, 255, 0.2);
+}
+
+.glow-border-sapphire {
+  border-color: rgba(0, 191, 255, 0.3);
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.15);
+}
+
+.glow-border-sapphire:hover {
+  border-color: rgba(0, 191, 255, 0.8);
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.4);
+}
+
+.glow-bg-sapphire {
+  box-shadow: 0 0 40px rgba(0, 191, 255, 0.25);
+}
+
+.glow-shadow-neon {
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.15), 0 0 40px rgba(37, 99, 235, 0.1);
+}
+
+.glow-shadow-neon:hover {
+  box-shadow: 0 0 30px rgba(0, 191, 255, 0.4), 0 0 60px rgba(37, 99, 235, 0.2);
+}
+
+/* Glassmorphism */
+.glassmorphism {
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glassmorphism-interactive {
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glassmorphism-interactive:hover {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(0, 191, 255, 0.35);
+}
+
+/* Custom Grid Backgrounds */
+.grid-bg-space {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+}
+
+.grid-bg-sapphire {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 191, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Sacred geometry circular rotating lines */
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse-slow {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 40s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 30s linear infinite;
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Cinematic reveal text */
+.reveal-text-wrap {
+  overflow: hidden;
+  display: block;
+}
+
+/* Lenis Custom CSS */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
